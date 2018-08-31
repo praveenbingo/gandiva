@@ -20,9 +20,7 @@ set(PRECOMPILED_SRCS
     hash.cc
     print.cc
     sample.cc
-    string_ops.cc
-    time.cc
-    timestamp_arithmetic.cc)
+    string_ops.cc)
 
 # Create bitcode for each of the source files.
 foreach(SRC_FILE ${PRECOMPILED_SRCS})
@@ -32,8 +30,7 @@ foreach(SRC_FILE ${PRECOMPILED_SRCS})
   add_custom_command(
     OUTPUT ${BC_FILE}
     COMMAND ${CLANG_EXECUTABLE}
-            -fno-use-cxa-atexit -std=c++11 -emit-llvm -O2 -c ${ABSOLUTE_SRC} -o ${BC_FILE}
-            -I$<TARGET_PROPERTY:Boost::boost,INTERFACE_INCLUDE_DIRECTORIES>
+            -std=c++11 -emit-llvm -O2 -c ${ABSOLUTE_SRC} -o ${BC_FILE}
     DEPENDS ${SRC_FILE})
   list(APPEND BC_FILES ${BC_FILE})
 endforeach()
@@ -50,7 +47,6 @@ add_custom_target(precompiled ALL DEPENDS ${GANDIVA_BC_OUTPUT_PATH})
 
 # testing
 add_precompiled_unit_test(bitmap_test.cc bitmap.cc)
-add_precompiled_unit_test(time_test.cc time.cc timestamp_arithmetic.cc)
 add_precompiled_unit_test(hash_test.cc hash.cc)
 add_precompiled_unit_test(sample_test.cc sample.cc)
 add_precompiled_unit_test(string_ops_test.cc string_ops.cc)

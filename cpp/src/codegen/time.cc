@@ -19,8 +19,8 @@ extern "C" {
 #include <stdlib.h>
 #include <time.h>
 
-#include "./time_constants.h"
-#include "./types.h"
+#include "codegen/time_constants.h"
+#include "codegen/time_types.h"
 
 #define MINS_IN_HOUR 60
 #define SECONDS_IN_MINUTE 60

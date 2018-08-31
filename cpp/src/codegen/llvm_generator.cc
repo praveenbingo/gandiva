@@ -369,12 +369,12 @@ llvm::Value *LLVMGenerator::AddFunctionCall(const std::string &full_name,
                                             llvm::Type *ret_type,
                                             const std::vector<llvm::Value *> &args,
                                             bool has_holder) {
-  if (has_holder) {
-    CheckAndAddPrototype(full_name, ret_type, args);
-  } else {
-    // add to list of functions that need to be compiled
-    engine_->AddFunctionToCompile(full_name);
-  }
+  // if (has_holder) {
+  CheckAndAddPrototype(full_name, ret_type, args);
+  // } else {
+  // add to list of functions that need to be compiled
+  engine_->AddFunctionToCompile(full_name);
+  //}
 
   // find the llvm function.
   llvm::Function *fn = module()->getFunction(full_name);

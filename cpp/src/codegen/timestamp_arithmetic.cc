@@ -11,12 +11,13 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
+#include "boost/date_time/posix_time/posix_time.hpp"
 
 extern "C" {
 
 #include <time.h>
-#include "./time_constants.h"
-#include "./types.h"
+#include "codegen/time_constants.h"
+#include "codegen/time_types.h"
 
 #define TIMESTAMP_DIFF_FIXED_UNITS(TYPE, NAME, FROM_MILLIS)          \
   FORCE_INLINE                                                       \
@@ -49,11 +50,11 @@ extern "C" {
       end_millis = tmp;                                                                  \
     }                                                                                    \
     time_t start_tsec = (time_t)MILLIS_TO_SEC(start_millis);                             \
-    struct tm start_tm;                                                                  \
-    gmtime_r(&start_tsec, &start_tm);                                                    \
+    boost::posix_time::ptime ptime = boost::posix_time::from_time_t(start_tsec);         \
+    struct tm start_tm = boost::posix_time::to_tm(ptime);                                \
     time_t end_tsec = (time_t)MILLIS_TO_SEC(end_millis);                                 \
-    struct tm end_tm;                                                                    \
-    gmtime_r(&end_tsec, &end_tm);                                                        \
+    ptime = boost::posix_time::from_time_t(end_tsec);                                    \
+    struct tm end_tm = boost::posix_time::to_tm(ptime);                                  \
     int32 months_diff;                                                                   \
     months_diff =                                                                        \
         12 * (end_tm.tm_year - start_tm.tm_year) + (end_tm.tm_mon - start_tm.tm_mon);    \
@@ -103,16 +104,15 @@ TIMESTAMP_DIFF(timestamp)
 // tm_mon being negative, and also tm_mon being >= 12 by
 // adjusting tm_year accordingly
 //
-// Using gmtime_r() and timegm() instead of localtime_r() and mktime()
-// since the input millis are since epoch
-#define ADD_INT32_TO_TIMESTAMP_MONTH_UNITS(TYPE, NAME, N_MONTHS) \
-  FORCE_INLINE                                                   \
-  TYPE NAME##_##TYPE##_int32(TYPE millis, int32 count) {         \
-    time_t tsec = (time_t)MILLIS_TO_SEC(millis);                 \
-    struct tm tm;                                                \
-    gmtime_r(&tsec, &tm);                                        \
-    tm.tm_mon += count * N_MONTHS;                               \
-    return (TYPE)timegm(&tm) * MILLIS_IN_SEC;                    \
+// note : the input millis are since epoch
+#define ADD_INT32_TO_TIMESTAMP_MONTH_UNITS(TYPE, NAME, N_MONTHS)           \
+  FORCE_INLINE                                                             \
+  TYPE NAME##_##TYPE##_int32(TYPE millis, int32 count) {                   \
+    time_t tsec = (time_t)MILLIS_TO_SEC(millis);                           \
+    boost::posix_time::ptime ptime = boost::posix_time::from_time_t(tsec); \
+    struct tm tm = boost::posix_time::to_tm(ptime);                        \
+    tm.tm_mon += count * N_MONTHS;                                         \
+    return (TYPE)timegm(&tm) * MILLIS_IN_SEC;                              \
   }
 
 // TODO: Handle overflow while converting int64 to millis
@@ -122,14 +122,14 @@ TIMESTAMP_DIFF(timestamp)
     return millis + TO_MILLIS * (TYPE)count;                      \
   }
 
-#define ADD_INT64_TO_TIMESTAMP_MONTH_UNITS(TYPE, NAME, N_MONTHS) \
-  FORCE_INLINE                                                   \
-  TYPE NAME##_##TYPE##_int64(TYPE millis, int64 count) {         \
-    time_t tsec = (time_t)MILLIS_TO_SEC(millis);                 \
-    struct tm tm;                                                \
-    gmtime_r(&tsec, &tm);                                        \
-    tm.tm_mon += count * N_MONTHS;                               \
-    return (TYPE)timegm(&tm) * MILLIS_IN_SEC;                    \
+#define ADD_INT64_TO_TIMESTAMP_MONTH_UNITS(TYPE, NAME, N_MONTHS)           \
+  FORCE_INLINE                                                             \
+  TYPE NAME##_##TYPE##_int64(TYPE millis, int64 count) {                   \
+    time_t tsec = (time_t)MILLIS_TO_SEC(millis);                           \
+    boost::posix_time::ptime ptime = boost::posix_time::from_time_t(tsec); \
+    struct tm tm = boost::posix_time::to_tm(ptime);                        \
+    tm.tm_mon += count * N_MONTHS;                                         \
+    return (TYPE)timegm(&tm) * MILLIS_IN_SEC;                              \
   }
 
 #define TIMESTAMP_ADD_INT32(TYPE)                                             \
