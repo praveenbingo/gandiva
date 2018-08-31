@@ -19,6 +19,8 @@ project(gandiva)
 # LLVM/Clang is required by multiple subdirs.
 find_package(LLVM)
 
+find_package(Boost COMPONENTS system regex filesystem REQUIRED)
+
 # Set the path where the byte-code files will be installed.
 set(GANDIVA_BC_INSTALL_DIR
   ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_INCLUDEDIR}/gandiva)
