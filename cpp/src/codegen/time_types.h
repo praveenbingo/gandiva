@@ -17,7 +17,7 @@
 
 #include <stdint.h>
 
-#define FORCE_INLINE __attribute__((always_inline))
+#define EXTERN extern
 
 // Use the same names as in arrow data types. Makes it easy to write pre-processor macros.
 using boolean = bool;

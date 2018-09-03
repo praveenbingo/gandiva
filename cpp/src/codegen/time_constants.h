@@ -15,6 +15,8 @@
 #ifndef TIME_CONSTANTS_H
 #define TIME_CONSTANTS_H
 
+#define SECONDS_IN_DAY (24 * 60 * 60)
+
 #define MILLIS_IN_SEC (1000)
 #define MILLIS_IN_MIN (60 * MILLIS_IN_SEC)
 #define MILLIS_IN_HOUR (60 * MILLIS_IN_MIN)

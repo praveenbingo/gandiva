@@ -20,7 +20,7 @@ extern "C" {
 #include "codegen/time_types.h"
 
 #define TIMESTAMP_DIFF_FIXED_UNITS(TYPE, NAME, FROM_MILLIS)          \
-  FORCE_INLINE                                                       \
+  EXTERN                                                             \
   int32 NAME##_##TYPE##_##TYPE(TYPE start_millis, TYPE end_millis) { \
     return FROM_MILLIS(end_millis - start_millis);                   \
   }
@@ -39,7 +39,7 @@ extern "C" {
 // c1) If end_millis_in_day >= start_millis_in_day, return diff_in_months
 // c2) else return diff_in_months - 1
 #define TIMESTAMP_DIFF_MONTH_UNITS(TYPE, NAME, N_MONTHS)                                 \
-  FORCE_INLINE                                                                           \
+  EXTERN                                                                                 \
   int32 NAME##_##TYPE##_##TYPE(TYPE start_millis, TYPE end_millis) {                     \
     int32 diff;                                                                          \
     bool is_positive = (end_millis > start_millis);                                      \
@@ -95,7 +95,7 @@ extern "C" {
 TIMESTAMP_DIFF(timestamp)
 
 #define ADD_INT32_TO_TIMESTAMP_FIXED_UNITS(TYPE, NAME, TO_MILLIS) \
-  FORCE_INLINE                                                    \
+  EXTERN                                                          \
   TYPE NAME##_##TYPE##_int32(TYPE millis, int32 count) {          \
     return millis + TO_MILLIS * (TYPE)count;                      \
   }
@@ -106,7 +106,7 @@ TIMESTAMP_DIFF(timestamp)
 //
 // note : the input millis are since epoch
 #define ADD_INT32_TO_TIMESTAMP_MONTH_UNITS(TYPE, NAME, N_MONTHS)           \
-  FORCE_INLINE                                                             \
+  EXTERN                                                                   \
   TYPE NAME##_##TYPE##_int32(TYPE millis, int32 count) {                   \
     time_t tsec = (time_t)MILLIS_TO_SEC(millis);                           \
     boost::posix_time::ptime ptime = boost::posix_time::from_time_t(tsec); \
@@ -117,13 +117,13 @@ TIMESTAMP_DIFF(timestamp)
 
 // TODO: Handle overflow while converting int64 to millis
 #define ADD_INT64_TO_TIMESTAMP_FIXED_UNITS(TYPE, NAME, TO_MILLIS) \
-  FORCE_INLINE                                                    \
+  EXTERN                                                          \
   TYPE NAME##_##TYPE##_int64(TYPE millis, int64 count) {          \
     return millis + TO_MILLIS * (TYPE)count;                      \
   }
 
 #define ADD_INT64_TO_TIMESTAMP_MONTH_UNITS(TYPE, NAME, N_MONTHS)           \
-  FORCE_INLINE                                                             \
+  EXTERN                                                                   \
   TYPE NAME##_##TYPE##_int64(TYPE millis, int64 count) {                   \
     time_t tsec = (time_t)MILLIS_TO_SEC(millis);                           \
     boost::posix_time::ptime ptime = boost::posix_time::from_time_t(tsec); \
@@ -188,13 +188,13 @@ ADD_INT64_TO_TIMESTAMP_FIXED_UNITS(timestamp, subtract, -1 * MILLIS_IN_DAY)
 ADD_INT64_TO_TIMESTAMP_FIXED_UNITS(timestamp, date_diff, -1 * MILLIS_IN_DAY)
 
 #define ADD_TIMESTAMP_TO_INT32_FIXED_UNITS(TYPE, NAME, TO_MILLIS) \
-  FORCE_INLINE                                                    \
+  EXTERN                                                          \
   TYPE NAME##_int32_##TYPE(int32 count, TYPE millis) {            \
     return millis + TO_MILLIS * (TYPE)count;                      \
   }
 
 #define ADD_TIMESTAMP_TO_INT64_FIXED_UNITS(TYPE, NAME, TO_MILLIS) \
-  FORCE_INLINE                                                    \
+  EXTERN                                                          \
   TYPE NAME##_int64_##TYPE(int64 count, TYPE millis) {            \
     return millis + TO_MILLIS * (TYPE)count;                      \
   }
