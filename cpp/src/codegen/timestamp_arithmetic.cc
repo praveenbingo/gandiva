@@ -100,10 +100,6 @@ TIMESTAMP_DIFF(timestamp)
     return millis + TO_MILLIS * (TYPE)count;                      \
   }
 
-// Documentation of mktime suggests that it handles
-// tm_mon being negative, and also tm_mon being >= 12 by
-// adjusting tm_year accordingly
-//
 // note : the input millis are since epoch
 #define ADD_INT32_TO_TIMESTAMP_MONTH_UNITS(TYPE, NAME, N_MONTHS)           \
   EXTERN                                                                   \
@@ -112,7 +108,16 @@ TIMESTAMP_DIFF(timestamp)
     boost::posix_time::ptime ptime = boost::posix_time::from_time_t(tsec); \
     struct tm tm = boost::posix_time::to_tm(ptime);                        \
     tm.tm_mon += count * N_MONTHS;                                         \
-    return (TYPE)timegm(&tm) * MILLIS_IN_SEC;                              \
+    if (tm.tm_mon > MONTHS_IN_YEAR) {                                      \
+      int years_to_add = tm.tm_mon / MONTHS_IN_YEAR;                       \
+      tm.tm_year += years_to_add;                                          \
+      tm.tm_mon = tm.tm_mon % MONTHS_IN_YEAR;                              \
+    } else if (tm.tm_mon < 0) {                                            \
+      int years_to_subtract = (tm.tm_mon / MONTHS_IN_YEAR) - 1;            \
+      tm.tm_year += years_to_subtract;                                     \
+      tm.tm_mon = MONTHS_IN_YEAR + (tm.tm_mon % MONTHS_IN_YEAR);           \
+    }                                                                      \
+    return (TYPE)getTimeInMillisSinceEpoch(tm);                            \
   }
 
 // TODO: Handle overflow while converting int64 to millis
@@ -129,7 +134,16 @@ TIMESTAMP_DIFF(timestamp)
     boost::posix_time::ptime ptime = boost::posix_time::from_time_t(tsec); \
     struct tm tm = boost::posix_time::to_tm(ptime);                        \
     tm.tm_mon += count * N_MONTHS;                                         \
-    return (TYPE)timegm(&tm) * MILLIS_IN_SEC;                              \
+    if (tm.tm_mon > MONTHS_IN_YEAR) {                                      \
+      int years_to_add = tm.tm_mon / MONTHS_IN_YEAR;                       \
+      tm.tm_year += years_to_add;                                          \
+      tm.tm_mon = tm.tm_mon % MONTHS_IN_YEAR;                              \
+    } else if (tm.tm_mon < 0) {                                            \
+      int years_to_subtract = (tm.tm_mon / MONTHS_IN_YEAR) - 1;            \
+      tm.tm_year += years_to_subtract;                                     \
+      tm.tm_mon = MONTHS_IN_YEAR + (tm.tm_mon % MONTHS_IN_YEAR);           \
+    }                                                                      \
+    return (TYPE)getTimeInMillisSinceEpoch(tm);                            \
   }
 
 #define TIMESTAMP_ADD_INT32(TYPE)                                             \

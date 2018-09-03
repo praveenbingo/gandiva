@@ -270,7 +270,7 @@ int getDecWeekOfYear(struct tm *ptm) {
 }
 
 // convert struct tm to time in millis
-int64 getTimeInMillisSinceEpoch(struct tm tm) {
+int64 getTimeInMillisSinceEpoch(struct tm &tm) {
   boost::posix_time::ptime ptime = boost::posix_time::ptime_from_tm(tm);
   time_t return_val_in_seconds = boost::posix_time::to_time_t(ptime);
   return (timestamp)return_val_in_seconds * MILLIS_IN_SEC;

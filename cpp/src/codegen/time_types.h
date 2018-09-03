@@ -98,5 +98,7 @@ int64 date_trunc_Century_date64(date64);
 int64 date_trunc_Millennium_date64(date64);
 
 int64 date_trunc_Week_timestamp(timestamp);
+
+int64 getTimeInMillisSinceEpoch(struct tm &tm);
 }  // extern "C"
 #endif  // TIME_TYPES_H
